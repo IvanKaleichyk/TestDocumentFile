@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.documentfile.provider.DocumentFile
+import androidx.recyclerview.widget.RecyclerView
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
@@ -16,9 +17,12 @@ const val TAG = "MAIN_APP_TAG"
 
 class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
+    val repository by lazy { MainRepository(applicationContext) }
+    val list by lazy { repository.getImages() }
+
     private val permissions = arrayOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-//            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.READ_EXTERNAL_STORAGE,
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,12 +31,17 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         checkPermission()
     }
 
+    private fun createRV() {
+        val adapter = MainAdapter()
+        val rv = findViewById<RecyclerView>(R.id.rv)
+        rv.adapter = adapter
+        adapter.setList(list)
+    }
+
     private fun start() {
         Log.d(TAG, "start")
 
-
-        val repository = MainRepository(applicationContext)
-        val list = repository.getImages()
+        createRV()
 
         val file: DocumentFile? = DocumentFile.fromSingleUri(applicationContext, list[0].uri)
 
@@ -66,18 +75,18 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         if (EasyPermissions.hasPermissions(applicationContext, *permissions)) start()
         else {
             EasyPermissions.requestPermissions(
-                    this,
-                    applicationContext.getString(R.string.cannot_without_permissions),
-                    123,
-                    *permissions
+                this,
+                applicationContext.getString(R.string.cannot_without_permissions),
+                123,
+                *permissions
             )
         }
     }
 
     override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<out String>,
-            grantResults: IntArray
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         Log.d(TAG, "onRequestPermissionsResult")
@@ -91,7 +100,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
         Toast.makeText(applicationContext, R.string.cannot_without_permissions, Toast.LENGTH_LONG)
-                .show()
+            .show()
         finish()
     }
 
