@@ -12,12 +12,12 @@ class MainRepository(private val context: Context) {
     fun getImages(): List<ImageModel> {
         val uriExternal: Uri = ImagesStorage.EXTERNAL_CONTENT_URI
         val listRes = mutableListOf<ImageModel>()
-        val sorterOrder = "${MediaStore.Images.Media.DATE_ADDED} DESC"
+//        val sorterOrder = "${MediaStore.Images.Media.DATE_ADDED} DESC"
 
         val cursor = queryContentResolver(
             uriExternal,
             imagesProjections,
-            sortedOrder = sorterOrder
+            sortedOrder = null
         ) ?: return emptyList()
 
         var id: Long
@@ -29,7 +29,9 @@ class MainRepository(private val context: Context) {
                     name = cursor.getString(1),
                     uri = Uri.withAppendedPath(uriExternal, id.toString()),
                     sizeAbbreviation = cursor.getString(2),
-                    dateAdded = cursor.getLong(3)
+                    dateAdded = cursor.getLong(3),
+                    type = cursor.getString(4)
+//                    type = ""
                 )
             )
         }
@@ -60,14 +62,16 @@ data class ImageModel(
     val name: String,
     val uri: Uri,
     val sizeAbbreviation: String,
-    val dateAdded: Long?
+    val dateAdded: Long?,
+    val type: String
 )
 
 val imagesProjections = arrayOf(
     ImagesStorage._ID,
     ImagesStorage.DISPLAY_NAME,
     ImagesStorage.SIZE,
-    ImagesStorage.DATE_ADDED
+    ImagesStorage.DATE_ADDED,
+    ImagesStorage.MIME_TYPE
 )
 
 

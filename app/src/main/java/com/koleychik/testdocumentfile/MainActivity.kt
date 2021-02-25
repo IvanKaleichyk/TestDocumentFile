@@ -41,6 +41,8 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         Log.d(TAG, "file.type = ${file?.type}")
         Log.d(TAG, "file.length = ${file?.length()}")
         Log.d(TAG, "file.name = ${file?.name}")
+        Log.d(TAG, "documentType = ${list[0].type}")
+//        Log.d(TAG, "documentType = ${list[0].type}")
 
 
         val rootFolder = File("storage/emulated/0")
