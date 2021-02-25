@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">TestDocumentFile</string>
+    <string name="cannot_without_permissions">cannot_without_permissions</string>
+</resources>
